@@ -136,5 +136,5 @@ conf int (+) is $`r oj0.5and2.0$conf.int[2]`$
     
 ##Conclusion
     
-From the analysis above, we can conclude there is a definite dependence on the dose level on tooth growth. P-value are less than threhold and confidence intervals don't include zero. This indicate that the when supplement dose increase, the tooth growth will increase significantly.
+From the analysis above, we can conclude there is a definite dependence on the dose level on tooth growth. P-value are less than threhold and confidence intervals don't include zero. This indicate that when supplement dose increase, the tooth growth will increase significantly.
 
