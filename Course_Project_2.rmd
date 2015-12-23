@@ -1,0 +1,111 @@
+#Statistical Inference Course Project - Part 2
+
+*Li Xin*  
+*23 December, 2015*
+
+
+##Overview
+This is the second part of project for the statistical inference class. In this part, ToothGrowth dataset will be loaded and performed some basic exploratory analysis.
+
+##Load Dataset
+```{r}
+library(datasets)
+str(ToothGrowth)
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+```
+
+##Basic Summary
+
+```{r}
+summary(ToothGrowth)
+```
+
+The below box plot shows tooth length with Dose. We can see there is a big difference there.
+```{r}
+boxplot(len~dose,data=ToothGrowth,col=c("green","purple","yellow"),main="Tooth Length and Dose")
+```
+
+The below box plot shows tooth length with supplement type. There are not much difference between these 2 types of supplement.
+```{r}
+boxplot(len~supp,data=ToothGrowth,col=c("blue","red"),main="Tooth Length and Supplement Type")
+```
+
+The below box plot shows interaction between dose and supplement type.
+```{r}
+boxplot(len~interaction(supp,dose),data=ToothGrowth,main="Tooth Length and Dose with Supplement",col=sample(rainbow(6)))
+```
+
+From the above box plot we can see supplement types increases with the tooth length.
+
+##Confidence Interval & Hypothesis
+From the above plots we can assume that for tooth length, there is probably a highly significant difference between dose, and not a significant difference between supplement type.
+
+Below is the T test for supplement type. Then test the effect of supplement type on tooth length when have dose constant at each level.
+```{r}
+oj <- ToothGrowth[ToothGrowth$supp=="OJ",]
+vc <- ToothGrowth[ToothGrowth$supp=="VC",]
+oj05 <- oj[oj$dose==0.5,]
+oj10 <- oj[oj$dose==1.0,]
+oj20 <- oj[oj$dose==2.0,]
+vc05 <- vc[vc$dose==0.5,]
+vc10 <- vc[vc$dose==1.0,]
+vc20 <- vc[vc$dose==2.0,]
+
+#t test vc and oj then dose = 0.5    
+vcoj0.5 <- t.test(len~supp,data=rbind(vc05,oj05),var.equal=FALSE)
+
+#t test vc and oj then dose = 1.0 
+vcoj1.0 <- t.test(len~supp,data=rbind(vc10,oj10),var.equal=F)
+
+#t test vc and oj then dose = 2.0    
+vcoj2.0 <- t.test(len~supp,data=rbind(vc20,oj20),var.equal=F)
+```
+
+
+
+Here we can see the the summary:
+
+For vc and oj at dose=0.5, the P value is **`r vcoj0.5$p.value`**, the conf int (-) is **`r vcoj0.5$conf.int[1]`**, the conf int (+) is **`r vcoj0.5$conf.int[2]`**
+
+For vc and oj at dose=1.0, the P value is **`r vcoj1.0$p.value`**, the conf int (-) is **`r vcoj1.0$conf.int[1]`**, the conf int (+) is **`r vcoj1.0$conf.int[2]`**
+
+For vc and oj at dose=2.0, the P value is **`r vcoj2.0$p.value`**, the conf int (-) is **`r vcoj2.0$conf.int[1]`**, the conf int (+) is **`r vcoj2.0$conf.int[2]`**
+
+
+
+Here we are going to test the effect of dose on tooth length:
+
+```{r}
+#0.5 vs 1.0
+vc0.5and1.0 <- t.test(len~dose,data=rbind(vc05,vc10),var.equal=TRUE)
+oj0.5and1.0 <- t.test(len~dose,data=rbind(oj05,oj10),var.equal=TRUE)
+
+#1.0 vs 2.0
+vc1.0and2.0 <- t.test(len~dose,data=rbind(vc10,vc20),var.equal=TRUE)
+oj1.0and2.0 <- t.test(len~dose,data=rbind(oj10,oj20),var.equal=TRUE)
+
+#0.5 vs 2.0
+vc0.5and2.0 <- t.test(len~dose,data=rbind(vc05,vc20),var.equal=TRUE)
+oj0.5and2.0 <- t.test(len~dose,data=rbind(oj05,oj20),var.equal=TRUE)
+```
+
+
+
+Here we can see the summary:
+
+For VC 0.5 and 1.0, P-value is **`r vc0.5and1.0$p.value`**,conf int (-) is **`r vc0.5and1.0$conf.int[1]`**,conf int (+) is **`r vc0.5and1.0$conf.int[2]`**
+
+For OJ 0.5 and 1.0, P-value is **`r oj0.5and1.0$p.value`**,conf int (-) is **`r oj0.5and1.0$conf.int[1]`**,conf int (+) is **`r oj0.5and1.0$conf.int[2]`**
+
+For VC 1.0 and 2.0, P-value is **`r vc1.0and2.0$p.value`**,conf int (-) is **`r vc1.0and2.0$conf.int[1]`**,conf int (+) is **`r vc1.0and2.0$conf.int[2]`**
+
+For OJ 1.0 and 2.0, P-value is **`r oj1.0and2.0$p.value`**,conf int (-) is **`r oj1.0and2.0$conf.int[1]`**,conf int (+) is **`r oj1.0and2.0$conf.int[2]`**
+
+For VC 0.5 and 2.0, P-value is **`r vc0.5and2.0$p.value`**,conf int (-) is **`r vc0.5and2.0$conf.int[1]`**,conf int (+) is **`r vc0.5and2.0$conf.int[2]`**
+
+For OJ 0.5 and 2.0, P-value is **`r oj0.5and2.0$p.value`**,conf int (-) is **`r oj0.5and2.0$conf.int[1]`**,conf int (+) is **`r oj0.5and2.0$conf.int[2]`**
+
+##Conclusion
+
+From the analysis above, we can conclude there is a definite dependence on the dose level on tooth growth. P-value are less than threhold and confidence intervals don't include zero. This indicate that the when supplement dose increase, the tooth growth will increase significantly.
+
